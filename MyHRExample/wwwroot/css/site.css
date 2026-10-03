@@ -1,0 +1,223 @@
+/* ===== VELTORA HR ===== */
+
+body {
+    background: #070b14;
+    color: #ffffff;
+}
+
+/* HERO */
+
+.hero-section {
+    min-height: 78vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+}
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(91, 75, 255, 0.18);
+        filter: blur(100px);
+        right: -100px;
+        top: 40px;
+    }
+
+    .hero-section::after {
+        content: "";
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        border-radius: 50%;
+        background: rgba(0, 174, 255, 0.12);
+        filter: blur(100px);
+        left: -120px;
+        bottom: 0;
+    }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 850px;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    color: #9c94ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.hero-content h1 {
+    font-size: 72px;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -3px;
+    margin-bottom: 25px;
+}
+
+    .hero-content h1 span {
+        background: linear-gradient(90deg, #786cff, #55c2ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+.hero-content p {
+    max-width: 620px;
+    color: #9da7b8;
+    font-size: 20px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+}
+
+.main-button {
+    display: inline-block;
+    padding: 15px 28px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #6657ff, #498cff);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.25s;
+}
+
+    .main-button:hover {
+        color: white;
+        transform: translateY(-2px);
+    }
+
+/* VACANCIES */
+
+.vacancies-section {
+    padding: 80px 0 120px;
+}
+
+.section-heading {
+    margin-bottom: 45px;
+}
+
+    .section-heading span {
+        color: #746cff;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+    }
+
+    .section-heading h2 {
+        font-size: 44px;
+        margin: 10px 0;
+        font-weight: 700;
+    }
+
+    .section-heading p {
+        color: #8e99aa;
+        font-size: 17px;
+    }
+
+/* CARDS */
+
+.vacancy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.vacancy-card {
+    position: relative;
+    min-height: 330px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    transition: 0.3s;
+}
+
+    .vacancy-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(111, 99, 255, 0.65);
+        background: rgba(255, 255, 255, 0.055);
+    }
+
+.vacancy-number {
+    color: #7067ff;
+    font-size: 14px;
+    margin-bottom: 35px;
+}
+
+.vacancy-card h3 {
+    font-size: 23px;
+    margin-bottom: 15px;
+}
+
+.vacancy-card p {
+    color: #919bab;
+    line-height: 1.6;
+    min-height: 78px;
+}
+
+.requirements {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 22px 0;
+}
+
+    .requirements span {
+        padding: 6px 11px;
+        border-radius: 7px;
+        background: rgba(108, 96, 255, 0.12);
+        color: #aaa4ff;
+        font-size: 13px;
+    }
+
+.vacancy-card a {
+    color: #8d86ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .vacancy-card a:hover {
+        color: #ffffff;
+    }
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+    .hero-content h1 {
+        font-size: 48px;
+    }
+
+    .vacancy-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: auto;
+        padding: 70px 0;
+    }
+
+    .hero-content h1 {
+        font-size: 40px;
+        letter-spacing: -2px;
+    }
+
+    .hero-content p {
+        font-size: 17px;
+    }
+
+    .section-heading h2 {
+        font-size: 34px;
+    }
+}

@@ -1,0 +1,234 @@
+﻿@model Vacancy
+@{
+    ViewData["Title"] = "HR — Вимоги до кандидата";
+}
+
+<style>
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    footer {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        background: #070b14;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .hr-page {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        box-sizing: border-box;
+        background: radial-gradient(circle at 20% 20%, rgba(40, 150, 255, 0.10), transparent 30%), radial-gradient(circle at 80% 20%, rgba(100, 70, 255, 0.15), transparent 30%), #070b14;
+    }
+
+    .hr-card {
+        width: 100%;
+        max-width: 850px;
+        padding: 55px;
+        background: rgba(15, 21, 33, 0.95);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 20px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    }
+
+    .label-top {
+        color: #7467ff;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 3px;
+        margin-bottom: 14px;
+    }
+
+    .hr-card h1 {
+        margin: 0 0 15px;
+        font-size: 42px;
+        font-weight: 750;
+    }
+
+    .description {
+        margin: 0 0 40px;
+        color: #929daf;
+        font-size: 17px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+        color: #c3cad6;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px 16px;
+        color: white;
+        font-size: 16px;
+        background: #0a101b;
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 10px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+        input:focus,
+        textarea:focus {
+            border-color: #6960ff;
+            box-shadow: 0 0 0 3px rgba(105,96,255,0.10);
+        }
+
+    textarea {
+        min-height: 260px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .form-bottom {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .save-button {
+        border: 0;
+        padding: 15px 27px;
+        border-radius: 10px;
+        color: white;
+        background: linear-gradient(90deg, #6957ff, #389cff);
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(70,100,255,0.25);
+        }
+
+    .hint {
+        color: #747f91;
+        font-size: 14px;
+    }
+
+    @@media (max-width: 650px) {
+        .hr-card {
+            padding: 30px 22px;
+        }
+
+            .hr-card h1 {
+                font-size: 32px;
+            }
+
+        .form-bottom {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .save-button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="hr-page">
+
+    <div class="hr-card">
+
+        <div class="label-top">
+            VELTORA HR
+        </div>
+
+        <h1>Вимоги до кандидата</h1>
+
+        <p class="description">
+            Вкажіть назву вакансії та додайте вимоги до кандидата.
+            Можна вставити готовий текст вакансії.
+        </p>
+
+
+        @if (ViewBag.Saved == true)
+        {
+            <p class="hint" style="margin-bottom: 25px; color: #7be0a6;">Вимоги збережено.</p>
+        }
+
+        <form method="post">
+
+            <div class="form-group">
+
+                <label for="vacancyName">
+                    Назва вакансії
+                </label>
+
+                <input id="vacancyName"
+                       name="vacancyName"
+                       type="text"
+                       placeholder="Наприклад: Junior .NET Developer"
+                       value="@Model?.Name"
+                       required />
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="requirements">
+                    Вимоги
+                </label>
+
+                <textarea id="requirements"
+                          name="requirements"
+                          placeholder="Наприклад:
+
+• Досвід з ASP.NET Core від 1 року
+• Знання C# та .NET
+• Робота з SQL
+• Розуміння Git
+• Англійська мова B1+"
+                          required>@Model?.Requirements</textarea>
+
+            </div>
+
+
+            <div class="form-bottom">
+
+                <button type="submit"
+                        class="save-button">
+
+                    Зберегти вимоги
+
+                </button>
+
+                <span class="hint">
+                    Список можна буде відредагувати пізніше
+                </span>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

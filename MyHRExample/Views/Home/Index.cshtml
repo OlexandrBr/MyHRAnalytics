@@ -1,0 +1,340 @@
+﻿@{
+    ViewData["Title"] = "Veltora Careers";
+}
+
+
+<style>
+    /* Убираем стандартные ограничения MVC-шаблона */
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Стандартный footer MVC мешал контенту */
+    footer {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        background: #070b14;
+        color: #ffffff;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .career-page {
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 15% 25%, rgba(0, 180, 255, 0.10), transparent 30%),
+            radial-gradient(circle at 85% 15%, rgba(93, 67, 255, 0.16), transparent 32%),
+            #070b14;
+    }
+
+    .content {
+        width: min(1180px, calc(100% - 48px));
+        margin: 0 auto;
+    }
+
+    /* HERO */
+    .hero {
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        padding: 70px 0;
+        box-sizing: border-box;
+    }
+
+    .hero-content {
+        max-width: 720px;
+    }
+
+    .hero h1 {
+        margin: 0 0 24px;
+        font-size: clamp(48px, 6vw, 76px);
+        line-height: 1.02;
+        font-weight: 800;
+        letter-spacing: -2px;
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, #745cff, #3ca6ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero p {
+        max-width: 650px;
+        margin: 0 0 32px;
+        color: #9ba7ba;
+        font-size: 19px;
+        line-height: 1.65;
+    }
+
+    .main-button {
+        display: inline-block;
+        padding: 15px 25px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #6956ff, #379cff);
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .main-button:hover {
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 10px 30px rgba(73, 116, 255, 0.25);
+    }
+
+    /* VACANCIES */
+    .vacancies {
+        padding: 80px 0 110px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .section-label {
+        margin-bottom: 16px;
+        color: #7567ff;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+
+    .vacancies h2 {
+        margin: 0 0 12px;
+        font-size: 42px;
+        font-weight: 750;
+    }
+
+    .section-description {
+        margin: 0 0 42px;
+        color: #8f9bad;
+        font-size: 16px;
+    }
+
+    .vacancy-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .vacancy-card {
+        min-height: 250px;
+        padding: 28px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        background: rgba(17, 23, 35, 0.82);
+        box-sizing: border-box;
+        transition: 0.25s ease;
+    }
+
+    .vacancy-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(99, 102, 241, 0.5);
+        background: rgba(20, 27, 42, 0.95);
+    }
+
+    .number {
+        display: block;
+        margin-bottom: 30px;
+        color: #7868ff;
+        font-size: 13px;
+    }
+
+    .vacancy-card h3 {
+        margin: 0 0 14px;
+        font-size: 22px;
+        font-weight: 650;
+    }
+
+    .vacancy-card p {
+        margin: 0 0 22px;
+        color: #929daf;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: rgba(100, 91, 255, 0.10);
+        color: #a8a1ff;
+        font-size: 12px;
+    }
+
+    /* Низ страницы */
+    .bottom-section {
+        padding: 70px 0;
+        text-align: center;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .bottom-section h2 {
+        margin-bottom: 14px;
+        font-size: 34px;
+    }
+
+    .bottom-section p {
+        color: #8f9bad;
+        font-size: 16px;
+    }
+
+    /* Адаптация */
+    @@media (max-width: 900px) {
+        .vacancy-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero {
+            min-height: 520px;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .content {
+            width: calc(100% - 30px);
+        }
+
+        .hero {
+            padding: 50px 0;
+        }
+
+        .hero h1 {
+            font-size: 46px;
+        }
+
+        .vacancies {
+            padding: 60px 0 80px;
+        }
+    }
+</style>
+
+<div class="career-page">
+
+    <section class="hero">
+        <div class="content">
+            <div class="hero-content">
+
+                <h1>
+                    Почни кар'єру<br />
+                    <span class="gradient-text">разом з Veltora</span>
+                </h1>
+
+                <p>
+                    Вакансії та можливості для абітурієнтів і студентів,
+                    які хочуть розвиватися у сфері IT.
+                </p>
+
+                <a href="#vacancies" class="main-button">
+                    Переглянути вакансії
+                </a>
+
+                <a asp-controller="Candidate" asp-action="Index" class="main-button">
+                    Надіслати резюме
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="vacancies" id="vacancies">
+        <div class="content">
+
+            <div class="section-label">OPEN POSITIONS</div>
+
+            <h2>Актуальні вакансії</h2>
+
+            <p class="section-description">
+                Обери напрямок, у якому хочеш розпочати свою кар'єру.
+            </p>
+
+            <div class="vacancy-grid">
+
+                <div class="vacancy-card">
+                    <span class="number">01</span>
+
+                    <h3>Junior .NET Developer</h3>
+
+                    <p>
+                        Розробка сучасних вебзастосунків на C#,
+                        ASP.NET Core та робота з базами даних.
+                    </p>
+
+                    <div class="tags">
+                        <span class="tag">C#</span>
+                        <span class="tag">ASP.NET Core</span>
+                        <span class="tag">SQL</span>
+                    </div>
+                </div>
+
+
+                <div class="vacancy-card">
+                    <span class="number">02</span>
+
+                    <h3>Frontend Developer</h3>
+
+                    <p>
+                        Створення сучасних та зручних інтерфейсів
+                        для вебзастосунків.
+                    </p>
+
+                    <div class="tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                </div>
+
+
+                <div class="vacancy-card">
+                    <span class="number">03</span>
+
+                    <h3>QA Engineer Intern</h3>
+
+                    <p>
+                        Тестування програмного забезпечення,
+                        пошук помилок та контроль якості продукту.
+                    </p>
+
+                    <div class="tags">
+                        <span class="tag">Testing</span>
+                        <span class="tag">QA</span>
+                        <span class="tag">Bug Tracking</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="bottom-section">
+        <div class="content">
+
+            <h2>Почни свій шлях в IT</h2>
+
+            <p>
+                Отримуй практичний досвід, працюй над реальними проєктами
+                та розвивай професійні навички.
+            </p>
+
+        </div>
+    </section>
+
+</div>
