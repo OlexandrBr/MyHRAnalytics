@@ -9,6 +9,9 @@ namespace MyHRExample.Controllers
     {
         private const string VacancyKey = "vacancy/vacancy.json";
         private const string ResumePrefix = "resumes/";
+        private const string AnalysisPrefix = "analysis/";
+
+        private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
         private readonly S3Service _s3Service;
 
@@ -36,23 +39,25 @@ namespace MyHRExample.Controllers
 
         public async Task<IActionResult> Resumes()
         {
-            var resumes = new List<Resume>();
+            return View(await GetResumesAsync(false));
+        }
 
-            foreach (var file in await _s3Service.ReadAsync(ResumePrefix))
+        public async Task<IActionResult> Dashboard()
+        {
+            return View(await GetResumesAsync(true));
+        }
+
+        public async Task<IActionResult> Details(string id)
+        {
+            var resumes = await GetResumesAsync(true);
+            var resume = resumes.FirstOrDefault(r => r.Id == id);
+
+            if (resume == null)
             {
-                var metadata = await _s3Service.GetMetadataAsync(file.Key);
-
-                resumes.Add(new Resume
-                {
-                    Key = file.Key,
-                    CandidateName = metadata.GetValueOrDefault("candidate-name", ""),
-                    Contacts = metadata.GetValueOrDefault("contacts", ""),
-                    FileName = metadata.GetValueOrDefault("file-name", file.Key),
-                    UploadedAt = (file.LastModified ?? DateTime.UtcNow).ToLocalTime()
-                });
+                return NotFound();
             }
 
-            return View(resumes.OrderByDescending(r => r.UploadedAt).ToList());
+            return View(resume);
         }
 
         public async Task<IActionResult> Open(string key)
@@ -75,7 +80,37 @@ namespace MyHRExample.Controllers
             }
 
             await _s3Service.DeleteAsync(key);
+            await _s3Service.DeleteAsync(AnalysisPrefix + Path.GetFileNameWithoutExtension(key) + ".json");
             return RedirectToAction("Resumes");
+        }
+
+        private async Task<List<Resume>> GetResumesAsync(bool withAnalysis)
+        {
+            var resumes = new List<Resume>();
+
+            foreach (var file in await _s3Service.ReadAsync(ResumePrefix))
+            {
+                var metadata = await _s3Service.GetMetadataAsync(file.Key);
+
+                var resume = new Resume
+                {
+                    Key = file.Key,
+                    CandidateName = metadata.GetValueOrDefault("candidate-name", ""),
+                    Contacts = metadata.GetValueOrDefault("contacts", ""),
+                    FileName = metadata.GetValueOrDefault("file-name", file.Key),
+                    UploadedAt = (file.LastModified ?? DateTime.UtcNow).ToLocalTime()
+                };
+
+                if (withAnalysis)
+                {
+                    var json = await _s3Service.ReadTextAsync(AnalysisPrefix + resume.Id + ".json");
+                    resume.Analysis = json == null ? null : JsonSerializer.Deserialize<Analysis>(json, JsonOptions);
+                }
+
+                resumes.Add(resume);
+            }
+
+            return resumes.OrderByDescending(r => r.UploadedAt).ToList();
         }
     }
 }

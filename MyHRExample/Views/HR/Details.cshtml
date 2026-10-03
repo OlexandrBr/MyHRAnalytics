@@ -1,0 +1,99 @@
+@model Resume
+@{
+    ViewData["Title"] = "HR — " + Model.CandidateName;
+    var analysis = Model.Analysis;
+}
+
+<link rel="stylesheet" href="~/css/pages.css" />
+<link rel="stylesheet" href="~/css/dashboard.css" />
+
+<div class="page">
+
+    <div class="card-box">
+
+        <a asp-action="Dashboard" class="back-link">← До списку кандидатів</a>
+
+        <div class="card-head">
+            <h1>@Model.CandidateName</h1>
+            <span class="status @Model.StatusClass">@Model.StatusText</span>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <span>Контакти</span>
+                @Model.Contacts
+            </div>
+            <div class="info-item">
+                <span>Резюме</span>
+                <a asp-action="Open" asp-route-key="@Model.Key" target="_blank" class="back-link" style="margin: 0;">@Model.FileName</a>
+            </div>
+            <div class="info-item">
+                <span>Завантажено</span>
+                @Model.UploadedAt.ToString("dd.MM.yyyy HH:mm")
+            </div>
+            @if (analysis != null)
+            {
+                <div class="info-item">
+                    <span>Проаналізовано</span>
+                    @analysis.AnalyzedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                </div>
+            }
+        </div>
+
+        @if (analysis == null)
+        {
+            <div class="block-title">Статус</div>
+            <p class="summary">Резюме очікує аналізу. Результат з'явиться після того, як AWS Lambda обробить файл.</p>
+        }
+        else if (analysis.Status != "Completed")
+        {
+            <div class="block-title">Помилка</div>
+            <p class="summary">@analysis.Error</p>
+        }
+        else
+        {
+            <div class="block-title">Відповідність вакансії</div>
+            <div class="match">
+                <div class="match-bar"><div style="width: @(analysis.MatchPercent)%"></div></div>
+                <span class="match-value">@analysis.MatchPercent%</span>
+            </div>
+
+            <div class="block-title">AI summary</div>
+            <p class="summary">@analysis.Summary</p>
+
+            <div class="block-title">Знайдені навички</div>
+            <div class="chips">
+                @foreach (var skill in analysis.Skills)
+                {
+                    <span class="chip">@skill</span>
+                }
+            </div>
+
+            <div class="block-title">Підтверджені вимоги вакансії</div>
+            @if (analysis.ConfirmedRequirements.Count == 0)
+            {
+                <p class="empty-text">Немає</p>
+            }
+            <ul class="check-list confirmed">
+                @foreach (var item in analysis.ConfirmedRequirements)
+                {
+                    <li>@item</li>
+                }
+            </ul>
+
+            <div class="block-title">Вимоги, для яких інформації не знайдено</div>
+            @if (analysis.MissingRequirements.Count == 0)
+            {
+                <p class="empty-text">Немає</p>
+            }
+            <ul class="check-list missing">
+                @foreach (var item in analysis.MissingRequirements)
+                {
+                    <li>@item</li>
+                }
+            </ul>
+        }
+
+    </div>
+
+</div>

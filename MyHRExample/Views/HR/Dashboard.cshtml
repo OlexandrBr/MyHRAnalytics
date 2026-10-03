@@ -1,0 +1,100 @@
+@model List<Resume>
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/pages.css" />
+<link rel="stylesheet" href="~/css/dashboard.css" />
+
+<div class="page dashboard">
+
+    <div class="dashboard-inner">
+
+        <div class="label-top">
+            VELTORA HR
+        </div>
+
+        <h1>HR Dashboard</h1>
+
+        <p class="description">
+            Результати аналізу резюме через Google Gemini. Аналіз виконує AWS Lambda після завантаження резюме в Amazon S3.
+        </p>
+
+        @if (Model.Count == 0)
+        {
+            <p class="description">Резюме ще немає.</p>
+        }
+
+        <div class="candidate-grid">
+
+            @foreach (var resume in Model)
+            {
+                var analysis = resume.Analysis;
+
+                <div class="candidate-card">
+
+                    <div class="card-head">
+                        <h2>@resume.CandidateName</h2>
+                        <span class="status @resume.StatusClass">@resume.StatusText</span>
+                    </div>
+
+                    @if (analysis == null)
+                    {
+                        <p class="empty-text">Результат аналізу ще не готовий. Оновіть сторінку трохи пізніше.</p>
+                    }
+                    else if (analysis.Status != "Completed")
+                    {
+                        <p class="empty-text">Не вдалося проаналізувати резюме.</p>
+                    }
+                    else
+                    {
+                        <div class="block-title">Знайдені навички</div>
+                        <div class="chips">
+                            @foreach (var skill in analysis.Skills)
+                            {
+                                <span class="chip">@skill</span>
+                            }
+                        </div>
+
+                        <div class="block-title">Підтверджені вимоги</div>
+                        @if (analysis.ConfirmedRequirements.Count == 0)
+                        {
+                            <p class="empty-text">Немає</p>
+                        }
+                        <ul class="check-list confirmed">
+                            @foreach (var item in analysis.ConfirmedRequirements)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+
+                        <div class="block-title">Інформації не знайдено</div>
+                        @if (analysis.MissingRequirements.Count == 0)
+                        {
+                            <p class="empty-text">Немає</p>
+                        }
+                        <ul class="check-list missing">
+                            @foreach (var item in analysis.MissingRequirements)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+
+                        <div class="block-title">AI summary</div>
+                        <p class="summary">@analysis.Summary</p>
+                    }
+
+                    <div class="card-bottom">
+                        <a asp-action="Details" asp-route-id="@resume.Id" class="details-button">
+                            Переглянути детальніше
+                        </a>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
