@@ -1,0 +1,233 @@
+@model List<Resume>
+@{
+    ViewData["Title"] = "HR Analytics";
+
+    var done = Model
+        .Where(r => r.Analysis != null && r.Analysis.Status == "Completed")
+        .OrderByDescending(r => r.Analysis!.MatchPercent)
+        .ToList();
+
+    var pending = Model.Count(r => r.Analysis == null);
+    var failed = Model.Count - done.Count - pending;
+    var average = done.Count == 0 ? 0 : (int)Math.Round(done.Average(r => r.Analysis!.MatchPercent));
+    var best = done.FirstOrDefault();
+
+    var topSkills = done
+        .SelectMany(r => r.Analysis!.Skills)
+        .GroupBy(s => s, StringComparer.OrdinalIgnoreCase)
+        .OrderByDescending(g => g.Count())
+        .Take(8)
+        .ToList();
+}
+
+<link rel="stylesheet" href="~/css/pages.css" />
+<link rel="stylesheet" href="~/css/dashboard.css" />
+<link rel="stylesheet" href="~/css/analytics.css" />
+
+<div class="page dashboard">
+
+    <div class="dashboard-inner">
+
+        <div class="label-top">
+            VELTORA HR
+        </div>
+
+        <h1>HR Analytics</h1>
+
+        <p class="description">
+            Загальна статистика по кандидатах і результатах аналізу резюме через Google Gemini.
+        </p>
+
+        <div class="stats">
+            <div class="stat">
+                <span>Усього кандидатів</span>
+                <b>@Model.Count</b>
+            </div>
+            <div class="stat">
+                <span>Проаналізовано</span>
+                <b>@done.Count</b>
+            </div>
+            <div class="stat">
+                <span>Очікують аналізу</span>
+                <b>@pending</b>
+            </div>
+            <div class="stat">
+                <span>Середня відповідність</span>
+                <b>@average%</b>
+            </div>
+        </div>
+
+        @if (best != null)
+        {
+            <p class="best">
+                Найкращий кандидат: <b>@best.CandidateName</b> — @best.Analysis!.MatchPercent%
+            </p>
+        }
+
+        @if (Model.Count == 0)
+        {
+            <p class="description">Резюме ще немає.</p>
+        }
+        else
+        {
+            <div class="charts">
+                <div class="chart-card">
+                    <h2>Кандидати за статусом</h2>
+                    <div class="chart-box">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h2>Відповідність вимогам вакансії, %</h2>
+                    <div class="chart-box">
+                        <canvas id="matchChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h2>Найчастіші навички</h2>
+                    <div class="chart-box">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <h2>Кандидати</h2>
+
+                <div class="table-scroll">
+                    <table class="candidates">
+                        <thead>
+                            <tr>
+                                <th>Кандидат</th>
+                                <th>Статус</th>
+                                <th>Відповідність</th>
+                                <th>Вимоги</th>
+                                <th>Основні навички</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var resume in Model.OrderByDescending(r => r.Analysis?.MatchPercent ?? -1))
+                            {
+                                var analysis = resume.Analysis;
+                                var completed = analysis != null && analysis.Status == "Completed";
+
+                                <tr>
+                                    <td class="name">@resume.CandidateName</td>
+                                    <td><span class="status @resume.StatusClass">@resume.StatusText</span></td>
+                                    <td>
+                                        @if (completed)
+                                        {
+                                            <div class="match">
+                                                <div class="match-bar"><div style="width: @(analysis!.MatchPercent)%"></div></div>
+                                                <span class="match-value">@analysis.MatchPercent%</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (completed)
+                                        {
+                                            <span>@analysis!.ConfirmedRequirements.Count з @(analysis.ConfirmedRequirements.Count + analysis.MissingRequirements.Count)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (completed)
+                                        {
+                                            <div class="chips">
+                                                @foreach (var skill in analysis!.Skills.Take(3))
+                                                {
+                                                    <span class="chip">@skill</span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@resume.Id" class="table-link">Детальніше</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        const statusValues = [@done.Count, @pending, @failed];
+        const matchNames = @Html.Raw(Json.Serialize(done.Select(r => string.Join(" ", r.CandidateName.Split(' ').Take(2)))));
+        const matchValues = @Html.Raw(Json.Serialize(done.Select(r => r.Analysis!.MatchPercent)));
+        const skillNames = @Html.Raw(Json.Serialize(topSkills.Select(g => g.Key)));
+        const skillValues = @Html.Raw(Json.Serialize(topSkills.Select(g => g.Count())));
+
+        Chart.defaults.color = "#c3cad6";
+        Chart.defaults.borderColor = "rgba(255,255,255,0.07)";
+
+        function drawBar(id, labels, values, color, max) {
+            const canvas = document.getElementById(id);
+
+            if (!canvas) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{ data: values, backgroundColor: color, borderRadius: 6, maxBarThickness: 26 }]
+                },
+                options: {
+                    indexAxis: "y",
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, max: max, ticks: { precision: 0 } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        const statusCanvas = document.getElementById("statusChart");
+
+        if (statusCanvas) {
+            new Chart(statusCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: ["Проаналізовано", "Очікує аналізу", "Помилка аналізу"],
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: ["#38c878", "#ffbe46", "#ff5a5a"],
+                        borderColor: "#0f1521",
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: "62%",
+                    plugins: { legend: { position: "bottom" } }
+                }
+            });
+        }
+
+        drawBar("matchChart", matchNames, matchValues, "#6957ff", 100);
+        drawBar("skillsChart", skillNames, skillValues, "#389cff");
+    </script>
+}

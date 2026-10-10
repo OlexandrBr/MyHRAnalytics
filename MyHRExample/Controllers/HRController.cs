@@ -47,6 +47,11 @@ namespace MyHRExample.Controllers
             return View(await GetResumesAsync(true));
         }
 
+        public async Task<IActionResult> Analytics()
+        {
+            return View(await GetResumesAsync(true));
+        }
+
         public async Task<IActionResult> Details(string id)
         {
             var resumes = await GetResumesAsync(true);
